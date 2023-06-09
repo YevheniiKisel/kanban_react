@@ -1,25 +1,39 @@
-import { FC } from "react"
-import {styled} from "styled-components"
+import { FC } from "react";
+import { styled } from "styled-components";
+import { Draggable } from "react-beautiful-dnd";
+import { Task } from "../initialData";
+
 
 const Container = styled.div`
   padding: 1rem 2rem;
-  
-  border-top: 1px solid black ;
-  &:first-child {
-    margin-top: 0;
+  margin-bottom: 1rem;
+  border: 1px solid black;
+  background-color: wheat;
+  &:last-child {
+    margin-bottom: 0;
   }
-`
+
+`;
 
 type TaskProps = {
-  content: string
-}
+  task: Task;
+  index: number;
+};
 
-const DragTask: FC<TaskProps> = ({content}) => {
+const DragTask: FC<TaskProps> = ({ task, index }) => {
   return (
-    <Container>
-      {content}
-    </Container>
-  )
-}
+    <Draggable draggableId={task.id} index={index}>
+      {(provided) => (
+        <Container
+          ref={provided.innerRef}
+          {...provided.dragHandleProps}
+          {...provided.draggableProps}
+        >
+          {task.content}
+        </Container>
+      )}
+    </Draggable>
+  );
+};
 
 export default DragTask;

@@ -1,7 +1,8 @@
-import { FC } from 'react'
-import {Task, Column} from '../initialData'
-import {styled} from "styled-components"
-import DragTask from './Task';
+import { FC } from "react";
+import { Task, Column } from "../initialData";
+import { styled } from "styled-components";
+import DragTask from "./Task";
+import { Droppable } from "react-beautiful-dnd";
 
 const Container = styled.div`
   display: flex;
@@ -13,6 +14,7 @@ const Container = styled.div`
   margin: 1rem;
   border: 1px solid black;
   width: fit-content;
+  padding: 1rem;
 `;
 const Title = styled.h3`
   font-size: 24px;
@@ -24,31 +26,38 @@ const TaskList = styled.div`
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
   align-content: center;
   text-align: start;
 `;
 
-
 type DragColumnProps = {
-  column: Column,
-  tasks: Task[]
-}
+  column: Column;
+  tasks: Task[];
+};
 
-
-const DragColumn: FC<DragColumnProps> = ({column, tasks}) => {
+const DragColumn: FC<DragColumnProps> = ({ column, tasks }) => {
   return (
     <Container>
       <Title>{column.title}</Title>
-      <TaskList>
-        {tasks.map((task) => {
-          return (
-            <DragTask key={task.id} content={task.content}  />
-          )
-        })}
-      </TaskList>
+      <Droppable droppableId={column.id}>
+        {(provided) => (
+          <TaskList ref={provided.innerRef} {...provided.droppableProps}>
+            {tasks.map((task, index) => {
+              return (
+                <DragTask
+                  key={task.id}
+                  task = {task}
+                  index={index}
+                />
+              );
+            })}
+            {provided.placeholder}
+          </TaskList>
+        )}
+      </Droppable>
     </Container>
-  )
-}
+  );
+};
 
-export default DragColumn
+export default DragColumn;
