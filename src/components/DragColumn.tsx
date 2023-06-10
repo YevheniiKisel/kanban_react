@@ -3,6 +3,7 @@ import { Task, Column } from "../initialData";
 import { styled } from "styled-components";
 import DragTask from "./Task";
 import { Droppable, Draggable } from "react-beautiful-dnd";
+import Button from "./Button";
 
 const DragColumn: FC<DragColumnProps> = ({ column, tasks, index }) => {
   return (
@@ -26,6 +27,7 @@ const DragColumn: FC<DragColumnProps> = ({ column, tasks, index }) => {
               </TaskList>
             )}
           </Droppable>
+          <Button textOnHover="+ New task">+</Button>
         </Container>
       )}
     </Draggable>
