@@ -18,7 +18,7 @@ const kanbanSlice = createSlice({
       state.availableTaskId++;
       
     },
-    /* editTask(state, action):void {
+    editTask(state, action):void {
       //TODO
       console.log('Editing a task!')
       state
@@ -29,7 +29,7 @@ const kanbanSlice = createSlice({
       console.log('Deleting a task!')
       state
 
-    }, */
+    },
     /* addColumn(state, action):void{
       //Optional Todo
     },
