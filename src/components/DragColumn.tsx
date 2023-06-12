@@ -1,9 +1,9 @@
 import { FC, memo, useMemo } from "react";
 import { Task, Column } from "../initialData";
 import { styled } from "styled-components";
-import DragTask from "./Task";
+import DragTask from "./DragTask";
 import { Droppable, Draggable } from "react-beautiful-dnd";
-import Button from "./Button";
+import AddTask from "./AddTask";
 
 const DragColumn: FC<DragColumnProps> = ({ column, tasks, index }) => {
   return (
@@ -27,7 +27,7 @@ const DragColumn: FC<DragColumnProps> = ({ column, tasks, index }) => {
               </TaskList>
             )}
           </Droppable>
-          <Button textOnHover="+ New task">+</Button>
+          <AddTask column={column}>+</AddTask>
         </Container>
       )}
     </Draggable>
@@ -57,20 +57,22 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  flex: 1 1 00px;
   align-content: center;
   justify-content: space-between;
   background-color: grey;
   margin: 1rem;
   border: 1px solid black;
   width: fit-content;
-  max-width: 350px;
   padding: 1rem;
 `;
 const Title = styled.h3`
   font-size: 24px;
   font-weight: 600;
   text-align: center;
-  margin: 1rem 2rem;
+  padding: 1rem 2rem;
+  width: 100%;
+
 `;
 const TaskList = styled.div`
   display: flex;

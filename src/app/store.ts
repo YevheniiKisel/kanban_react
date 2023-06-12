@@ -1,25 +1,41 @@
-import { configureStore } from "@reduxjs/toolkit";
-import kanbanReducer from '../feature/dnd/kanbanSlice';
-import storage from 'redux-persist/lib/storage';
-import {persistReducer, persistStore} from 'redux-persist';
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import kanbanReducer from "../feature/dnd/kanbanSlice";
+import storage from "redux-persist/lib/storage";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 
-//Configure persist
+// Configure persist
 const persistConfig = {
-  key: 'root',
-  storage
+  key: "root",
+  storage,
 };
 
-const persistedReducer = persistReducer(persistConfig, kanbanReducer);
-
-
-
-export const store = configureStore({
-  reducer: persistedReducer,
+const rootReducer = combineReducers({
+  kanban: kanbanReducer,
 });
 
-export const persistor = persistStore(store)
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
+const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+});
 
+const persistor = persistStore(store);
 
-export type AppDispatch = typeof store.dispatch ;
+export { store, persistor };
+export type AppDispatch = typeof store.dispatch;
 export type RootState = ReturnType<typeof store.getState>;
