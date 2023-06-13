@@ -43,7 +43,7 @@ export default App;
 const InnerList: FC<InnerListProps> = memo(({ column, tasksMap, index }) => {
   const mappedColumns = useMemo(() => {
     const tasks: Task[] = column.taskIds.map((taskId) => tasksMap[taskId]);
-    return <DragColumn column={column} tasks={tasks} index={index} />;
+    return <DragColumn key={column.id} column={column} tasks={tasks} index={index} />;
   }, [column, tasksMap, index]);
 
   return <>{mappedColumns}</>;
@@ -61,7 +61,6 @@ const Container = styled.div`
   flex-wrap: nowrap;
   flex: 1 1 260px;
   
-  /* gap: 32px; */
   justify-content: center;
   padding-left: 100px;
   padding-right: 100px;

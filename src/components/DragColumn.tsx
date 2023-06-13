@@ -22,7 +22,7 @@ const DragColumn: FC<DragColumnProps> = ({ column, tasks, index }) => {
                 {...provided.droppableProps}
                 $isDraggingOver={snapshot.isDraggingOver}
               >
-                <InnerList tasks={tasks} />
+                <InnerList tasks={tasks} columnId={column.id}/>
                 {provided.placeholder}
               </TaskList>
             )}
@@ -34,12 +34,12 @@ const DragColumn: FC<DragColumnProps> = ({ column, tasks, index }) => {
   );
 };
 
-const InnerList: FC<{ tasks: Task[] }> = memo(({ tasks }) => {
+const InnerList: FC<{ tasks: Task[], columnId: string }> = memo(({ tasks, columnId }) => {
   
   const mappedTasks = useMemo(() => {
     return (
       tasks.map((task, index) => {
-        return <DragTask key={task.id} task={task} index={index} />
+        return <DragTask key={task.id} task={task} index={index} columnId={columnId}/>
       })
     )
   }, [tasks])

@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { DropResult } from "react-beautiful-dnd";
 
 const initialState: KanbanState = {
@@ -30,10 +30,7 @@ const kanbanSlice = createSlice({
   name: "kanban",
   initialState,
   reducers: {
-    addTask(
-      state,
-      action: PayloadAction<AddTaskPayload>
-    ): void {
+    addTask(state, action: PayloadAction<AddTaskPayload>): void {
       // Cast update tasks state
       const taskId = `task-${state.availableTaskId}`;
       const newTask = {
@@ -48,7 +45,6 @@ const kanbanSlice = createSlice({
       // Cast update columns state
       const columnId = action.payload.column.id;
       const column = state.columns[columnId];
-      console.log(column);
       const updatedColumn = {
         ...column,
         taskIds: [...column.taskIds, taskId],
@@ -67,14 +63,56 @@ const kanbanSlice = createSlice({
     editTask(state, action: PayloadAction<EditTaskPayload>): void {
       //Find task inside state by it's id and update content value
       const taskId = action.payload.task.id;
-      const updatedTaskDescription = action.payload.newContent 
+      const updatedTaskDescription = action.payload.newContent;
 
       state.tasks[taskId].content = updatedTaskDescription;
     },
-    deleteTask(state, action): void {
-      //TODO
-      console.log("Deleting a task!");
-      state;
+    deleteTask(state, action: PayloadAction<DeleteTaskPayload>): void {
+      const deletedTaskId = action.payload.taskId;
+      const columnId = action.payload.columnId;
+
+      //Update columns state to get out taskId that will be erased
+      const updateTaks = state.columns[columnId].taskIds.filter(taskId => taskId !==deletedTaskId )
+      state.columns[columnId].taskIds = updateTaks;
+      
+      //Delete a record with key [deletedTaskId] from tasks state
+      delete state.tasks[deletedTaskId]; // <- your problem is here.
+
+      
+      /**
+       * Why? Because `delete` operator doesn't exactly remove the property from the array.
+       * It just sets it's value to `undefined`.
+       *
+       * So, when you try to iterate over the array, you get `undefined` values.
+       */
+
+      // Solution 1: use `filter` method to create a new array without the deleted task.
+      // IE: state.tasks = state.tasks.filter(task => task.id !== deletedTaskId);
+
+      // Solution 2: use `splice` method to remove the task from the array.
+      // IE: state.tasks.splice(deletedTaskId, 1);
+
+      // Solution 3: use `slice` method to create a new array without the deleted task.
+      // IE: state.tasks = state.tasks.slice(0, deletedTaskId).concat(state.tasks.slice(deletedTaskId + 1));
+
+      /**
+       * Run the bellow code to see the visual representation of the problem.
+       * 
+          const arr = [1, 2, 3];
+          const indexToRemove = 1;
+
+          console.log(arr);
+
+          delete arr[indexToRemove];
+
+          console.log(arr);
+
+          arr.splice(indexToRemove, 1);
+
+          console.log(arr);
+       */
+
+      // PS: good luck, sweetie <3
     },
     /* addColumn(state, action):void{
       //Optional Todo
@@ -132,7 +170,6 @@ const kanbanSlice = createSlice({
           //Update state
           state.columns[newColumn.id] = newColumn;
           return;
-
         } else {
           const columnStartTasksIds = Array.from(columnStart.taskIds);
           const columnFinishTasksIds = Array.from(columnFinish.taskIds);
@@ -185,11 +222,16 @@ export type Column = {
 };
 
 type AddTaskPayload = {
-  taskDescription: string,
-  column: Column
-}
+  taskDescription: string;
+  column: Column;
+};
 
 type EditTaskPayload = {
-  newContent: string,
-  task: Task
-}
+  newContent: string;
+  task: Task;
+};
+
+type DeleteTaskPayload = {
+  taskId: string;
+  columnId: string;
+};

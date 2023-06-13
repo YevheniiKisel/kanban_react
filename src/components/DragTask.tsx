@@ -6,9 +6,9 @@ import EditIcon from "../assets/icons/EditIcon";
 import DeleteIcon from "../assets/icons/DeleteIcon";
 import { useAppDispatch } from "../app/hooks";
 import TextArea from "./TextArea";
-import { editTask } from "../app/feature/dnd/kanbanSlice";
+import { deleteTask, editTask } from "../app/feature/dnd/kanbanSlice";
 
-const DragTask: FC<TaskProps> = ({ task, index }) => {
+const DragTask: FC<TaskProps> = ({ task, index, columnId }) => {
   const dispatch = useAppDispatch();
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -37,6 +37,9 @@ const DragTask: FC<TaskProps> = ({ task, index }) => {
     }
   }
 
+  function handleDeleteTask() {
+    dispatch(deleteTask({taskId: task.id, columnId: columnId }));//paste columnId
+  }
   return (
     <Draggable isDragDisabled={isEditing} draggableId={task.id} index={index}>
       {(provided, snapshot) =>
@@ -68,12 +71,12 @@ const DragTask: FC<TaskProps> = ({ task, index }) => {
             {...provided.draggableProps}
             $isDragging={snapshot.isDragging}
           >
-            <p>{task.content}</p>
+            <StyledParagraph>{task.content}</StyledParagraph>
             <ControlButtons id="id">
               <IconButton onClick={handleEditingMode}>
                 <EditIcon theme="light" />
               </IconButton>
-              <IconButton>
+              <IconButton onClick={handleDeleteTask}>
                 <DeleteIcon theme="light" />
               </IconButton>
             </ControlButtons>
@@ -111,8 +114,8 @@ const Container = styled.div`
 
 const ControlButtons = styled.div`
   position: absolute;
-  top: -50%;
-  right: 0px;
+  top:-18px;
+  right: 0%;
   opacity: 0;
   display: none;
   gap: 8px;
@@ -125,7 +128,12 @@ const IconButton = styled.button`
   height: 32px;
 `;
 
+const StyledParagraph = styled.p`
+  white-space: pre-wrap;
+`;
+
 type TaskProps = {
   task: Task;
   index: number;
+  columnId: string;
 };
