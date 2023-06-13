@@ -57,14 +57,14 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  flex: 1 1 00px;
+  flex: 1 1 260px;
   align-content: center;
   justify-content: space-between;
   background-color: grey;
-  margin: 1rem;
   border: 1px solid black;
   width: fit-content;
   padding: 1rem;
+  margin: 1rem;
 `;
 const Title = styled.h3`
   font-size: 24px;

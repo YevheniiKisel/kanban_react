@@ -64,10 +64,12 @@ const kanbanSlice = createSlice({
       state.columns = updatedColumns;
       state.availableTaskId++;
     },
-    editTask(state, action): void {
-      //TODO
-      console.log("Editing a task!");
-      state;
+    editTask(state, action: PayloadAction<EditTaskPayload>): void {
+      //Find task inside state by it's id and update content value
+      const taskId = action.payload.task.id;
+      const updatedTaskDescription = action.payload.newContent 
+
+      state.tasks[taskId].content = updatedTaskDescription;
     },
     deleteTask(state, action): void {
       //TODO
@@ -185,4 +187,9 @@ export type Column = {
 type AddTaskPayload = {
   taskDescription: string,
   column: Column
+}
+
+type EditTaskPayload = {
+  newContent: string,
+  task: Task
 }

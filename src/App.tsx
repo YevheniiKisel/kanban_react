@@ -1,10 +1,10 @@
 import { FC, memo, useMemo } from "react";
 import DragColumn from "./components/DragColumn";
-import { Column, Task } from "./feature/dnd/kanbanSlice";
+import { Column, Task } from "./app/feature/dnd/kanbanSlice";
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
-import { onDragEnd } from "./feature/dnd/kanbanSlice";
+import { onDragEnd } from "./app/feature/dnd/kanbanSlice";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -58,8 +58,11 @@ interface InnerListProps {
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  flex: 1 1 260px;
+  
+  /* gap: 32px; */
   justify-content: center;
-  padding-left: 200px;
-  padding-right: 200px;
+  padding-left: 100px;
+  padding-right: 100px;
 `;
