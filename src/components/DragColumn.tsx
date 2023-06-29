@@ -1,4 +1,4 @@
-import { FC, memo, useMemo } from "react";
+import { FC, memo, useEffect, useMemo, useState } from "react";
 import { Task, Column } from "../initialData";
 import { styled } from "styled-components";
 import DragTask from "./DragTask";
@@ -6,15 +6,26 @@ import { Droppable, Draggable } from "react-beautiful-dnd";
 import AddTask from "./AddTask";
 
 const DragColumn: FC<DragColumnProps> = ({ column, tasks, index }) => {
+  const [taskCount, setTaskCount] = useState<number>(0);
+  useEffect(() => {
+    setTaskCount(() => {
+      return column.taskIds.length;
+    });
+  }, [column]);
+
   return (
-    <Draggable draggableId={column.id} index={index}>
+    //temporary disabled drag feature for columns. Change isDragDisable prop to false 
+    <Draggable draggableId={column.id} index={index} isDragDisabled={true}> 
       {(provided) => (
         <Container
           ref={provided.innerRef}
           {...provided.dragHandleProps}
           {...provided.draggableProps}
         >
-          <Title>{column.title}</Title>
+          <Title>
+            {column.title}
+            <span> | {taskCount}</span>
+          </Title>
           <Droppable droppableId={column.id} type="task">
             {(provided, snapshot) => (
               <TaskList
@@ -22,7 +33,7 @@ const DragColumn: FC<DragColumnProps> = ({ column, tasks, index }) => {
                 {...provided.droppableProps}
                 $isDraggingOver={snapshot.isDraggingOver}
               >
-                <InnerList tasks={tasks} columnId={column.id}/>
+                <InnerList tasks={tasks} column={column} />
                 {provided.placeholder}
               </TaskList>
             )}
@@ -34,22 +45,25 @@ const DragColumn: FC<DragColumnProps> = ({ column, tasks, index }) => {
   );
 };
 
-const InnerList: FC<{ tasks: Task[], columnId: string }> = memo(({ tasks, columnId }) => {
-  
-  const mappedTasks = useMemo(() => {
-    return (
-      tasks.map((task, index) => {
-        return <DragTask key={task.id} task={task} index={index} columnId={columnId}/>
-      })
-    )
-  }, [tasks])
-  
-  return (
-    <>{mappedTasks}</>
-  )
+const InnerList: FC<{ tasks: Task[]; column: Column }> = memo(
+  ({ tasks, column }) => {
+    const mappedTasks = useMemo(() => {
+      return tasks.map((task, index) => {
+        return (
+          <DragTask
+            key={task.id}
+            task={task}
+            index={index}
+            columnId={column.id}
+            columnTitle={column.title}
+          />
+        );
+      });
+    }, [tasks]);
 
-});
-
+    return <>{mappedTasks}</>;
+  }
+);
 
 export default DragColumn;
 
@@ -60,8 +74,7 @@ const Container = styled.div`
   flex: 1 1 260px;
   align-content: center;
   justify-content: space-between;
-  background-color: grey;
-  border: 1px solid black;
+  border: 2px solid black;
   width: fit-content;
   padding: 1rem;
   margin: 1rem;
@@ -69,10 +82,14 @@ const Container = styled.div`
 const Title = styled.h3`
   font-size: 24px;
   font-weight: 600;
-  text-align: center;
+  text-align: start;
   padding: 1rem 2rem;
   width: 100%;
-
+  border-bottom: 1px solid black;
+  margin-bottom: 1rem;
+  & span {
+    font-weight: 300;
+  }
 `;
 const TaskList = styled.div`
   display: flex;
@@ -82,7 +99,7 @@ const TaskList = styled.div`
   justify-content: start;
   align-content: center;
   text-align: start;
-  background-color: ${(props) => (props.$isDraggingOver ? "green" : "inherit")};
+  border: ${(props) => (props.$isDraggingOver ? "1px dashed black" : "none")};
   transition: background-color 0.2s ease-in-out;
   min-height: 200px;
 `;

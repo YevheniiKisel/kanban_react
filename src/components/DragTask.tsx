@@ -7,8 +7,11 @@ import DeleteIcon from "../assets/icons/DeleteIcon";
 import { useAppDispatch } from "../app/hooks";
 import TextArea from "./TextArea";
 import { deleteTask, editTask } from "../app/feature/dnd/kanbanSlice";
+import CancelIcon from "../assets/icons/CancelIcon";
+import SubmitIcon from "../assets/icons/SubmitIcon";
+import * as React from "react";
 
-const DragTask: FC<TaskProps> = ({ task, index, columnId }) => {
+const DragTask: FC<TaskProps> = ({ task, index, columnId, columnTitle }) => {
   const dispatch = useAppDispatch();
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -26,19 +29,25 @@ const DragTask: FC<TaskProps> = ({ task, index, columnId }) => {
     setIsEditing(true);
   }
 
-  function handleEditingSubmit(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+  function handleKeyboardSubmit(e: React.KeyboardEvent) {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
-      dispatch(editTask({ newContent, task}));
+      dispatch(editTask({ newContent, task }));
       setIsEditing(false);
-    } else if (e.key === 'Escape'){
+    } else if (e.key === "Escape") {
       e.preventDefault();
       setIsEditing(false);
     }
   }
 
+  function handleMouseSubmit(e: React.MouseEvent) {
+    e.preventDefault();
+    dispatch(editTask({ newContent, task }));
+    setIsEditing(false);
+  }
+
   function handleDeleteTask() {
-    dispatch(deleteTask({taskId: task.id, columnId: columnId }));//paste columnId
+    dispatch(deleteTask({ taskId: task.id, columnId: columnId })); //paste columnId
   }
   return (
     <Draggable isDragDisabled={isEditing} draggableId={task.id} index={index}>
@@ -48,19 +57,23 @@ const DragTask: FC<TaskProps> = ({ task, index, columnId }) => {
             ref={provided.innerRef}
             {...provided.dragHandleProps}
             {...provided.draggableProps}
-            $isDragging={snapshot.isDragging}
+            $isDragging={snapshot.isDragging} //Use that to rotate a little bit a task to show it's drag status
+            $columnTitle={columnTitle}
           >
             <TextArea
               content={newContent}
               onChange={handleTaskDescriptionChange}
-              onSubmit={handleEditingSubmit}
+              onSubmit={handleKeyboardSubmit}
             />
             <ControlButtons>
-              <IconButton>
-                <EditIcon theme="light" />
+              <IconButton
+                $theme="light"
+                onClick={handleMouseSubmit}
+              >
+                <SubmitIcon />
               </IconButton>
-              <IconButton>
-                <DeleteIcon theme="light" />
+              <IconButton $theme="light" onClick={() => setIsEditing(false)}>
+                <CancelIcon />
               </IconButton>
             </ControlButtons>
           </Container>
@@ -70,14 +83,15 @@ const DragTask: FC<TaskProps> = ({ task, index, columnId }) => {
             {...provided.dragHandleProps}
             {...provided.draggableProps}
             $isDragging={snapshot.isDragging}
+            $columnTitle={columnTitle}
           >
             <StyledParagraph>{task.content}</StyledParagraph>
             <ControlButtons id="id">
-              <IconButton onClick={handleEditingMode}>
-                <EditIcon theme="light" />
+              <IconButton onClick={handleEditingMode} $theme="dark">
+                <EditIcon />
               </IconButton>
-              <IconButton onClick={handleDeleteTask}>
-                <DeleteIcon theme="light" />
+              <IconButton onClick={handleDeleteTask} $theme="dark">
+                <DeleteIcon />
               </IconButton>
             </ControlButtons>
           </Container>
@@ -95,37 +109,56 @@ const Container = styled.div`
   margin-bottom: 1rem;
   border: 1px solid black;
   border-radius: 0.5rem;
-  box-shadow: 2px 4px 8px rgb(0, 0, 0, 0.25);
   width: 100%;
-  background-color: ${(props) => (props.$isDragging ? "skyblue" : "wheat")};
-  transition: background-color 0.1s ease;
+  background-color: ${(props) => {
+    switch (props.$columnTitle) {
+      case "To do":
+        return "#FF6B6B";
+      case "In progress":
+        return "#FFD93D";
+      case "Complete":
+        return "#6BCB77";
+      default:
+        return "#FFFFFF";
+    }
+  }};
+  transition: all 0.1s ease;
   &:last-child {
-    margin-bottom: 0;
+    margin-bottom: 1.5rem;
   }
-  &:hover div {
-    opacity: 1;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-content: center;
-    transition: opacity 0.4s ease;
+  &:hover {
+    box-shadow: -8px 8px 0px 0px #000;
+    translate: 8px -8px;
   }
+  
 `;
 
 const ControlButtons = styled.div`
-  position: absolute;
-  top:-18px;
-  right: 0%;
-  opacity: 0;
-  display: none;
+  position: static;
+  opacity: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
   gap: 8px;
+  margin: 8px 0;
 `;
 
 const IconButton = styled.button`
   border: none;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  display: flex;
+  width: 2rem;
+  height: 2rem;
+  padding: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  background-color: ${(props) => (props.$theme === "light" ? "#FFF" : "#000")};
+  cursor: pointer;
+  transition: scale 0.1s;
+  &:hover {
+    scale: 1.1;
+  }
 `;
 
 const StyledParagraph = styled.p`
@@ -136,4 +169,5 @@ type TaskProps = {
   task: Task;
   index: number;
   columnId: string;
+  columnTitle: string;
 };

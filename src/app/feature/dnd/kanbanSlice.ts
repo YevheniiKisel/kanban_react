@@ -7,7 +7,7 @@ const initialState: KanbanState = {
   columns: {
     "column-1": {
       id: "column-1",
-      title: "To-do",
+      title: "To do",
       taskIds: [],
     },
     "column-2": {
@@ -72,13 +72,14 @@ const kanbanSlice = createSlice({
       const columnId = action.payload.columnId;
 
       //Update columns state to get out taskId that will be erased
-      const updateTaks = state.columns[columnId].taskIds.filter(taskId => taskId !==deletedTaskId )
+      const updateTaks = state.columns[columnId].taskIds.filter(
+        (taskId) => taskId !== deletedTaskId
+      );
       state.columns[columnId].taskIds = updateTaks;
-      
+
       //Delete a record with key [deletedTaskId] from tasks state
       delete state.tasks[deletedTaskId]; // <- your problem is here.
 
-      
       /**
        * Why? Because `delete` operator doesn't exactly remove the property from the array.
        * It just sets it's value to `undefined`.
