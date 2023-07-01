@@ -1,9 +1,12 @@
+//Libraries
 import { FC, memo, useEffect, useMemo, useState } from "react";
-import { Task, Column } from "../initialData";
-import { styled } from "styled-components";
-import DragTask from "./DragTask";
 import { Droppable, Draggable } from "react-beautiful-dnd";
+import { styled } from "styled-components";
+//Components
+import DragTask from "./DragTask";
 import AddTask from "./AddTask";
+//Types
+import { Task, Column } from "../app/feature/dnd/kanbanSlice";
 
 const DragColumn: FC<DragColumnProps> = ({ column, tasks, index }) => {
   const [taskCount, setTaskCount] = useState<number>(0);
@@ -14,8 +17,8 @@ const DragColumn: FC<DragColumnProps> = ({ column, tasks, index }) => {
   }, [column]);
 
   return (
-    //temporary disabled drag feature for columns. Change isDragDisable prop to false 
-    <Draggable draggableId={column.id} index={index} isDragDisabled={true}> 
+    //temporary disabled drag feature for columns. Change isDragDisable prop to false
+    <Draggable draggableId={column.id} index={index} isDragDisabled={true}>
       {(provided) => (
         <Container
           ref={provided.innerRef}
@@ -45,6 +48,8 @@ const DragColumn: FC<DragColumnProps> = ({ column, tasks, index }) => {
   );
 };
 
+export default DragColumn;
+
 const InnerList: FC<{ tasks: Task[]; column: Column }> = memo(
   ({ tasks, column }) => {
     const mappedTasks = useMemo(() => {
@@ -65,7 +70,11 @@ const InnerList: FC<{ tasks: Task[]; column: Column }> = memo(
   }
 );
 
-export default DragColumn;
+type DragColumnProps = {
+  column: Column;
+  tasks: Task[];
+  index: number;
+};
 
 const Container = styled.div`
   display: flex;
@@ -79,6 +88,7 @@ const Container = styled.div`
   padding: 1rem;
   margin: 1rem;
 `;
+
 const Title = styled.h3`
   font-size: 24px;
   font-weight: 600;
@@ -91,6 +101,7 @@ const Title = styled.h3`
     font-weight: 300;
   }
 `;
+
 const TaskList = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -103,9 +114,3 @@ const TaskList = styled.div`
   transition: background-color 0.2s ease-in-out;
   min-height: 200px;
 `;
-
-type DragColumnProps = {
-  column: Column;
-  tasks: Task[];
-  index: number;
-};

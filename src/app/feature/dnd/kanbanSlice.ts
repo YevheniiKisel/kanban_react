@@ -1,6 +1,8 @@
-import type { PayloadAction } from "@reduxjs/toolkit";
+//Libraries
 import { createSlice } from "@reduxjs/toolkit";
 import { DropResult } from "react-beautiful-dnd";
+//Types
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: KanbanState = {
   tasks: {},
@@ -55,7 +57,6 @@ const kanbanSlice = createSlice({
       };
 
       //Update Redux state
-
       state.tasks = updatedTasks;
       state.columns = updatedColumns;
       state.availableTaskId++;
@@ -78,52 +79,9 @@ const kanbanSlice = createSlice({
       state.columns[columnId].taskIds = updateTaks;
 
       //Delete a record with key [deletedTaskId] from tasks state
-      delete state.tasks[deletedTaskId]; // <- your problem is here.
-
-      /**
-       * Why? Because `delete` operator doesn't exactly remove the property from the array.
-       * It just sets it's value to `undefined`.
-       *
-       * So, when you try to iterate over the array, you get `undefined` values.
-       */
-
-      // Solution 1: use `filter` method to create a new array without the deleted task.
-      // IE: state.tasks = state.tasks.filter(task => task.id !== deletedTaskId);
-
-      // Solution 2: use `splice` method to remove the task from the array.
-      // IE: state.tasks.splice(deletedTaskId, 1);
-
-      // Solution 3: use `slice` method to create a new array without the deleted task.
-      // IE: state.tasks = state.tasks.slice(0, deletedTaskId).concat(state.tasks.slice(deletedTaskId + 1));
-
-      /**
-       * Run the bellow code to see the visual representation of the problem.
-       * 
-          const arr = [1, 2, 3];
-          const indexToRemove = 1;
-
-          console.log(arr);
-
-          delete arr[indexToRemove];
-
-          console.log(arr);
-
-          arr.splice(indexToRemove, 1);
-
-          console.log(arr);
-       */
-
-      // PS: good luck, sweetie <3
+      delete state.tasks[deletedTaskId];
     },
-    /* addColumn(state, action):void{
-      //Optional Todo
-    },
-    editColumn(state, action):void{
-      //Optional Todo
-    },
-    deleteColumn(state, action):void{
-      //Optional Todo
-    }, */
+
     onDragEnd(state, action: PayloadAction<DropResult>): void {
       const { draggableId, source, destination, type } = action.payload;
 
