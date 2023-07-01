@@ -1,42 +1,52 @@
+//Libraries
 import { FC, memo, useMemo } from "react";
-import DragColumn from "./components/DragColumn";
-import { Column, Task } from "./app/feature/dnd/kanbanSlice";
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import styled from "styled-components";
+//Components
+import DragColumn from "./components/DragColumn";
+//Hooks, actions
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { onDragEnd } from "./app/feature/dnd/kanbanSlice";
+//Types
+import { Column, Task } from "./app/feature/dnd/kanbanSlice";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
-  const {columnOrder, columns, tasks} = useAppSelector((state) => state.kanban);
+  const { columnOrder, columns, tasks } = useAppSelector(
+    (state) => state.kanban
+  );
 
-  function handleDragEnd(result: DropResult):void{
+  function handleDragEnd(result: DropResult): void {
     dispatch(onDragEnd(result));
   }
 
   return (
     <Wrapper>
-    <Title>Kanban canvas</Title>
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <Droppable droppableId="all-columns" direction="horizontal" type="column">
-        {(provided) => (
-          <Container {...provided.droppableProps} ref={provided.innerRef}>
-            {columnOrder.map((columnId, index) => {
-              const column = columns[columnId];
-              return (
-                <InnerList
-                  key={columnId}
-                  column={column}
-                  tasksMap={tasks}
-                  index={index}
-                />
-              );
-            })}
-            {provided.placeholder}
-          </Container>
-        )}
-      </Droppable>
-    </DragDropContext>
+      <Title>Kanban canvas</Title>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable
+          droppableId="all-columns"
+          direction="horizontal"
+          type="column"
+        >
+          {(provided) => (
+            <Container {...provided.droppableProps} ref={provided.innerRef}>
+              {columnOrder.map((columnId, index) => {
+                const column = columns[columnId];
+                return (
+                  <InnerList
+                    key={columnId}
+                    column={column}
+                    tasksMap={tasks}
+                    index={index}
+                  />
+                );
+              })}
+              {provided.placeholder}
+            </Container>
+          )}
+        </Droppable>
+      </DragDropContext>
     </Wrapper>
   );
 };
@@ -46,7 +56,9 @@ export default App;
 const InnerList: FC<InnerListProps> = memo(({ column, tasksMap, index }) => {
   const mappedColumns = useMemo(() => {
     const tasks: Task[] = column.taskIds.map((taskId) => tasksMap[taskId]);
-    return <DragColumn key={column.id} column={column} tasks={tasks} index={index} />;
+    return (
+      <DragColumn key={column.id} column={column} tasks={tasks} index={index} />
+    );
   }, [column, tasksMap, index]);
 
   return <>{mappedColumns}</>;
@@ -70,22 +82,24 @@ const Container = styled.div`
 
 const Title = styled.h1`
   color: #000;
-font-size: 4.5rem;
-font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
-padding: 1rem 0;
-text-align: center;
-
-`
+  font-size: 4.5rem;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  padding: 1rem 0;
+  text-align: center;
+`;
 
 const Wrapper = styled.div`
   min-height: 100vh;
   height: auto;
   width: 100%;
-  background: linear-gradient(180deg, #6DA9FF 61.10%, rgba(77, 150, 255, 0.91) 100%);
+  background: linear-gradient(
+    180deg,
+    #6da9ff 61.1%,
+    rgba(77, 150, 255, 0.91) 100%
+  );
   scroll-behavior: smooth;
-  
-  `
-  
+`;

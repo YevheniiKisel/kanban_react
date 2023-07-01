@@ -1,19 +1,22 @@
+//Libraries
 import { ChangeEvent, FC, useState } from "react";
 import { styled } from "styled-components";
 import { Draggable } from "react-beautiful-dnd";
-import { Task } from "../initialData";
+//Components
+import TextArea from "./TextArea";
+//Hooks, actions
+import { useAppDispatch } from "../app/hooks";
+import { deleteTask, editTask } from "../app/feature/dnd/kanbanSlice";
+//Types
+import { Task } from "../app/feature/dnd/kanbanSlice";
+//Assets
 import EditIcon from "../assets/icons/EditIcon";
 import DeleteIcon from "../assets/icons/DeleteIcon";
-import { useAppDispatch } from "../app/hooks";
-import TextArea from "./TextArea";
-import { deleteTask, editTask } from "../app/feature/dnd/kanbanSlice";
 import CancelIcon from "../assets/icons/CancelIcon";
 import SubmitIcon from "../assets/icons/SubmitIcon";
-import * as React from "react";
 
 const DragTask: FC<TaskProps> = ({ task, index, columnId, columnTitle }) => {
   const dispatch = useAppDispatch();
-
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [newContent, setNewContent] = useState<string>("");
 
@@ -30,7 +33,7 @@ const DragTask: FC<TaskProps> = ({ task, index, columnId, columnTitle }) => {
   }
 
   function handleKeyboardSubmit(e: React.KeyboardEvent) {
-    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       dispatch(editTask({ newContent, task }));
       setIsEditing(false);
@@ -47,8 +50,9 @@ const DragTask: FC<TaskProps> = ({ task, index, columnId, columnTitle }) => {
   }
 
   function handleDeleteTask() {
-    dispatch(deleteTask({ taskId: task.id, columnId: columnId })); //paste columnId
+    dispatch(deleteTask({ taskId: task.id, columnId: columnId }));
   }
+
   return (
     <Draggable isDragDisabled={isEditing} draggableId={task.id} index={index}>
       {(provided, snapshot) =>
@@ -57,7 +61,7 @@ const DragTask: FC<TaskProps> = ({ task, index, columnId, columnTitle }) => {
             ref={provided.innerRef}
             {...provided.dragHandleProps}
             {...provided.draggableProps}
-            $isDragging={snapshot.isDragging} //Use that to rotate a little bit a task to show it's drag status
+            $isDragging={snapshot.isDragging}
             $columnTitle={columnTitle}
           >
             <TextArea
@@ -66,10 +70,7 @@ const DragTask: FC<TaskProps> = ({ task, index, columnId, columnTitle }) => {
               onSubmit={handleKeyboardSubmit}
             />
             <ControlButtons>
-              <IconButton
-                $theme="light"
-                onClick={handleMouseSubmit}
-              >
+              <IconButton $theme="light" onClick={handleMouseSubmit}>
                 <SubmitIcon />
               </IconButton>
               <IconButton $theme="light" onClick={() => setIsEditing(false)}>
@@ -130,7 +131,6 @@ const Container = styled.div`
     box-shadow: -8px 8px 0px 0px #000;
     translate: 8px -8px;
   }
-  
 `;
 
 const ControlButtons = styled.div`

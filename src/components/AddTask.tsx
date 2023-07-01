@@ -18,12 +18,15 @@ const AddTask: FC<AddTaskProps> = ({ children, column }) => {
   }
 
   function handleInputSubmit(e: React.KeyboardEvent): void {
-    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+    //Post task on Command + Enter
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       dispatch(addTask({ taskDescription, column }));
       setTaskDescription("");
       setIsAddingTask(false);
-    } else if (e.key === 'Escape'){
+    } 
+    //Undo new task adding mode
+    else if (e.key === 'Escape'){
       e.preventDefault();
       setIsAddingTask(false);
     }

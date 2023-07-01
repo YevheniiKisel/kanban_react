@@ -1,13 +1,8 @@
+//Libraries
 import { ChangeEvent, FC, useEffect, useRef } from "react";
 import styled from "styled-components";
+//Hooks
 import useAutosizeTextArea from "../utilities/hooks/useAutoResizeTextArea";
-
-interface TextAreaProps {
-  content: string;
-  placeholder?: string;
-  onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
-  onSubmit?: (e: React.KeyboardEvent) => void;
-}
 
 const TextArea: FC<TextAreaProps> = ({
   content,
@@ -46,6 +41,13 @@ const TextArea: FC<TextAreaProps> = ({
 };
 
 export default TextArea;
+
+interface TextAreaProps {
+  content: string;
+  placeholder?: string;
+  onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  onSubmit?: (e: React.KeyboardEvent) => void;
+}
 
 const InputField = styled.textarea`
   border: 1px solid black;
