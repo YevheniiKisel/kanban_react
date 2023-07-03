@@ -76,6 +76,10 @@ type DragColumnProps = {
   index: number;
 };
 
+type TaskListProps = {
+  $isDraggingOver: boolean
+}
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -102,7 +106,7 @@ const Title = styled.h3`
   }
 `;
 
-const TaskList = styled.div`
+const TaskList = styled.div<TaskListProps>`
   display: flex;
   flex-wrap: wrap;
   flex-grow: 1;

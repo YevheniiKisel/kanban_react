@@ -104,7 +104,7 @@ const DragTask: FC<TaskProps> = ({ task, index, columnId, columnTitle }) => {
 
 export default DragTask;
 
-const Container = styled.div`
+const Container = styled.div<ContainerProps>`
   position: relative;
   padding: 0.5rem 1rem;
   margin-bottom: 1rem;
@@ -143,7 +143,7 @@ const ControlButtons = styled.div`
   margin: 8px 0;
 `;
 
-const IconButton = styled.button`
+const IconButton = styled.button<IconButtonProps>`
   border: none;
   border-radius: 50%;
   display: flex;
@@ -171,3 +171,11 @@ type TaskProps = {
   columnId: string;
   columnTitle: string;
 };
+
+type IconButtonProps = {
+  $theme: string
+}
+
+type ContainerProps = {
+  $columnTitle: string
+}
